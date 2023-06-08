@@ -18,6 +18,8 @@ public class PlayerMovements : MonoBehaviour
     [SerializeField] float maxDistance;
     [SerializeField] LayerMask layerMask;
 
+    private float invertedIndex;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,8 +29,14 @@ public class PlayerMovements : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        TurnAround();
+        Movements();
+    }
+
+    void Movements()
+    {
         float horizontalInput = Input.GetAxis("Horizontal");
-        transform.Translate(Vector3.right * horizontalInput * _playerSpeed * Time.deltaTime);
+        transform.Translate(Vector3.right * horizontalInput * _playerSpeed * invertedIndex * Time.deltaTime);
 
         if (Input.GetKeyDown(KeyCode.Space) && GroundCheck())
         {
@@ -62,5 +70,22 @@ public class PlayerMovements : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawCube(transform.position - transform.up * maxDistance, boxSize);
+    }
+
+    void TurnAround()
+    {
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition.z = 0f;
+
+        if (mousePosition.x < transform.position.x)
+        {
+            transform.localRotation = Quaternion.Euler(0, 180, 0);
+            invertedIndex = -1f;
+        }
+        else
+        {
+            transform.localRotation = Quaternion.Euler(0, 0, 0);
+            invertedIndex = 1f;
+        }
     }
 }
