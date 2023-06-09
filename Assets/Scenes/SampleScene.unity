@@ -360,6 +360,9 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 64
+  dashingPower: 10
+  dashingTime: 0.2
+  dashingCooldown: 1
 --- !u!54 &1538964356
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -887,8 +890,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7374856368229068033}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2f8b511d2731e349b0787e6381936b6, type: 3}
+  m_Script: {fileID: 11500000, guid: f6f1783b4df1fdf4cba2e48708dd1828, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet: {fileID: 182842, guid: 7932449da136fc249b13fe0665479826, type: 3}
+  bullet: {fileID: 5225577467550457528, guid: af071f9338755e942838c6143c7852aa, type: 3}
   gunBarrel: {fileID: 4079473188376402753}
+  range: 0

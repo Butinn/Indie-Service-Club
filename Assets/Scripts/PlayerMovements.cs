@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerMovements : MonoBehaviour
 {
     private Rigidbody rb;
+    private float invertedIndex;
 
     [Header("==========Player Speed setting==========")]
     [SerializeField] float _playerSpeed;
@@ -18,7 +19,13 @@ public class PlayerMovements : MonoBehaviour
     [SerializeField] float maxDistance;
     [SerializeField] LayerMask layerMask;
 
-    private float invertedIndex;
+    [Header("==========Dash setting ==========")]
+    private bool canDash = true;
+    private bool isDashing;
+    [SerializeField] float dashingPower = 24f;
+    [SerializeField] float dashingTime = 0.2f;
+    [SerializeField] float dashingCooldown = 1f;
+
 
     // Start is called before the first frame update
     void Start()
@@ -31,16 +38,27 @@ public class PlayerMovements : MonoBehaviour
     {
         TurnAround();
         Movements();
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+        {
+            StartCoroutine(Dash());
+        }
     }
 
     void Movements()
     {
+        if (isDashing)
+        {
+            return;
+        }
+
+        //Moving LR
         float horizontalInput = Input.GetAxis("Horizontal");
         transform.Translate(Vector3.right * horizontalInput * _playerSpeed * invertedIndex * Time.deltaTime);
 
+        //Jumping
         if (Input.GetKeyDown(KeyCode.Space) && GroundCheck())
         {
-            //rb.AddForce(transform.up * _jumpForce, ForceMode.Impulse);
             rb.velocity = transform.up * _jumpForce;
         }
 
@@ -56,6 +74,7 @@ public class PlayerMovements : MonoBehaviour
 
     bool GroundCheck()
     {
+        //check if player are touching the ground
         if (Physics.BoxCast(transform.position, boxSize, -transform.up, transform.rotation, maxDistance, layerMask))
         {
             return true;
@@ -77,6 +96,9 @@ public class PlayerMovements : MonoBehaviour
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = 0f;
 
+        //rotating body
+
+        //rotating body to match gun pos
         if (mousePosition.x < transform.position.x)
         {
             transform.localRotation = Quaternion.Euler(0, 180, 0);
@@ -87,5 +109,18 @@ public class PlayerMovements : MonoBehaviour
             transform.localRotation = Quaternion.Euler(0, 0, 0);
             invertedIndex = 1f;
         }
+    }
+
+    IEnumerator Dash()
+    {
+        canDash = false;
+        isDashing = true;
+        rb.useGravity = false;
+        rb.velocity = new Vector3(transform.localScale.x * dashingPower * invertedIndex, 0f, 0f);
+        yield return new WaitForSeconds(dashingTime);
+        rb.useGravity = true;
+        isDashing = false;
+        yield return new WaitForSeconds(dashingCooldown);
+        canDash = true;
     }
 }
